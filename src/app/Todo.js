@@ -55,20 +55,18 @@ export class Todo extends Component {
       });
     }
     removeTodo(index) {
-        const todos = this.state.todos;
-        todos.splice(index, 1);
-      fetch(`http://localhost:3000/todos/${index+1}`, { 
+      fetch(`http://localhost:3000/todos/${this.state.todos[index].id}`, { 
         method: 'delete',
+        body: JSON.stringify({
+          id: this.state.todos[index].id
+        }),
         headers: {
         'Content-Type': "application/json" }})
-      .then(res => res.json())
       .then(data => {
+        const todos = this.state.todos;
+        todos.splice(index, 1);
         this.setState({ todos })
       });
-
-        this.setState({
-            todos
-        })
     }
     render() {
         return ( < View style = {
