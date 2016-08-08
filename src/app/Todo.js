@@ -20,9 +20,19 @@ export class Todo extends Component {
     constructor() {
         super();
         this.state = {
-            todos: [1, 2],
+            todos: [],
             newTodo: ''
         }
+      }
+    componentWillMount() {
+      fetch('http://localhost:3000/todos', { 
+        method: 'get',
+        headers: {
+        'Content-Type': "application/json" }})
+      .then(res => res.json())
+      .then(data =>
+        {this.setState({ todos: data });}
+      )
     }
     handleChange(value) {
         this.setState({
@@ -30,17 +40,32 @@ export class Todo extends Component {
         });
     }
     handlePress(e) {
+      fetch('http://localhost:3000/todos', { 
+        method: 'post',
+        body: JSON.stringify({
+          name: this.state.newTodo
+        }),
+        headers: {
+        'Content-Type': "application/json" }})
+      .then(res => res.json())
+      .then(data => {
         const todos = this.state.todos.slice();
-        todos.push(this.state.newTodo);
-        console.log(todos);
-        this.setState({
-            todos: todos,
-            newTodo: ''
-        });
+        todos.push(data);
+        this.setState({todos, newTodo: ''})
+      });
     }
     removeTodo(index) {
         const todos = this.state.todos;
         todos.splice(index, 1);
+      fetch(`http://localhost:3000/todos/${index+1}`, { 
+        method: 'delete',
+        headers: {
+        'Content-Type': "application/json" }})
+      .then(res => res.json())
+      .then(data => {
+        this.setState({ todos })
+      });
+
         this.setState({
             todos
         })
@@ -58,7 +83,7 @@ export class Todo extends Component {
         </View>
         {this.state.todos.map((todo, i) => 
           (<TouchableHighlight onPress={this.removeTodo.bind(this, i)} 
-            key={i}><Text style={styles.listItem} >{todo}</Text ></TouchableHighlight>))}
+            key={i}><Text style={styles.listItem} >{todo.name}</Text ></TouchableHighlight>))}
       </View>
         )
     }
