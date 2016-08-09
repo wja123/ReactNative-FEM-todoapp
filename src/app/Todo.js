@@ -46,6 +46,7 @@ export class Todo extends Component {
           name: this.state.newTodo
         }),
         headers: {
+        'Accept': 'application/json',
         'Content-Type': "application/json" }})
       .then(res => res.json())
       .then(data => {
